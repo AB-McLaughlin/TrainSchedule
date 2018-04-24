@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Train Schedule</title>
 
-    <!-- Latest compiled and minified CSS -->
+<!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 <!-- Latest compiled and minified JavaScript -->
@@ -20,19 +20,108 @@
 
 </head>
 <body>
+  
+
     
+  <div class = container>
+    <div class = jumbotron>
+      <h1>Train Schedule</h1>
+    </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">Departing Trains</div>
+        <table class="table" id="display">
+                <tr>
+                    <th scope="col">Train Name</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Frequency (min)</th>
+                    <th scope="col">Next Arrival</th>
+                    <th scope="col">Minutes Away</th>
+                </tr>
+        </table>
+      </div>
+      <div class="panel panel-default">
+          <div class="panel-heading">Current Schedule</div>
+        <form>
+            <div class="form-group">
+                <label for="trainName">Train Name</label>
+                <input type="text" class="form-control" id="trainName" placeholder="Train Name">
+            </div>
+            <div class="form-group">
+                <label for="destination">Destination</label>
+                <input type="text" class="form-control" id="destination" placeholder="City, ST">
+            </div>
+            <div class="form-group">
+                  <label for="firstTrainTime">First Train Time</label>
+                  <input type="text" class="form-control" id="firstTrainTime" placeholder="Military Time">
+            </div>
+            <div class="form-group">
+                  <label for="frequency">Frequency</label>
+                  <input type="text" class="form-control" id="frequency" placeholder="in minutes">
+            </div>  
+            <div class="form-row">
+                <button id="submit" class="btn btn-primary" type="submit" value="Search">Submit</button>
+            </div>
+        </form>
+      </div>
+  </div>
+
+
+  <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyDRwNPM42G9fHAGYNdlxMxWgn6iF4S_Rjo",
+      authDomain: "trainschedule-8a99c.firebaseapp.com",
+      databaseURL: "https://trainschedule-8a99c.firebaseio.com",
+      projectId: "trainschedule-8a99c",
+      storageBucket: "trainschedule-8a99c.appspot.com",
+      messagingSenderId: "866381105671"
+    };
+    firebase.initializeApp(config);
+ 
+  
+  var dataBase = firebase.database();
+  var trainName = "";
+  var destination = "";
+  var firstTrain = "";
+  var freqMin = "";
+
+  database.ref().on("child_added", function(childSnapshot) {
+            trainName = childSnapshot.val().trainName;
+            destination = childSnapshot.val().destination;
+            firstTrain = childSnapshot.val().firstTrain;
+            freqMin = childSnapshot.val().freqMin;
+            var now = moment().format(LT);
+            var nextArr = moment(now + freqMin);
+            var minAway= moment(nextArr - now);
+
+              $("#display").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + freqMin + "</td><td>" +  nextArr + "</td><td>" + minAway + "</td>");
+
+                  }, function(errorObject) {
+        console.log("The read failed: " + errorObject.code);
+  });
+
+    $("#submit").on("click", function(event) {
+            console.log("clicked");
+            event.preventDefault();
+            var trainName = $("#trainName").val().trim();
+            var destination = $("#destinantion").val().trim();
+            var firstTrain = $("#firstTrainTime").val().trim();
+            var freqMin = $("#frequency").val().trim();
+
+            dataBase.ref().push({
+                trainName: trainName,
+                destination: destination,
+                firstTrain: firstTrain,
+                freqMin: freqMin,
+              
+            });
+    });
+
+
+
+   </script>
+  <script type="text/javascript"></script>   
 </body>
-<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
-<script>
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyDRwNPM42G9fHAGYNdlxMxWgn6iF4S_Rjo",
-    authDomain: "trainschedule-8a99c.firebaseapp.com",
-    databaseURL: "https://trainschedule-8a99c.firebaseio.com",
-    projectId: "trainschedule-8a99c",
-    storageBucket: "",
-    messagingSenderId: "866381105671"
-  };
-  firebase.initializeApp(config);
-</script>
+
 </html>
