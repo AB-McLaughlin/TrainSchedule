@@ -6,23 +6,26 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Train Schedule</title>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-<!--Momentjs library-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
-
 <!--Jquery library-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
+
+<!--Momentjs library-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+<!--Javascript-->
+<script type= "text/javascript" src = "assets/javascript/logic.js"></script>
+<!--firebase-->
+<script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+
+
 </head>
 <body>
-  
 
-    
   <div class = container>
     <div class = jumbotron>
       <h1>Train Schedule</h1>
@@ -65,63 +68,8 @@
       </div>
   </div>
 
-
-  <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
-  <script>
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyDRwNPM42G9fHAGYNdlxMxWgn6iF4S_Rjo",
-      authDomain: "trainschedule-8a99c.firebaseapp.com",
-      databaseURL: "https://trainschedule-8a99c.firebaseio.com",
-      projectId: "trainschedule-8a99c",
-      storageBucket: "trainschedule-8a99c.appspot.com",
-      messagingSenderId: "866381105671"
-    };
-    firebase.initializeApp(config);
  
-  
-  var dataBase = firebase.database();
-  var trainName = "";
-  var destination = "";
-  var firstTrain = "";
-  var freqMin = "";
 
-  database.ref().on("child_added", function(childSnapshot) {
-            trainName = childSnapshot.val().trainName;
-            destination = childSnapshot.val().destination;
-            firstTrain = childSnapshot.val().firstTrain;
-            freqMin = childSnapshot.val().freqMin;
-            var now = moment().format(LT);
-            var nextArr = moment(now + freqMin);
-            var minAway= moment(nextArr - now);
-
-              $("#display").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + freqMin + "</td><td>" +  nextArr + "</td><td>" + minAway + "</td>");
-
-                  }, function(errorObject) {
-        console.log("The read failed: " + errorObject.code);
-  });
-
-    $("#submit").on("click", function(event) {
-            console.log("clicked");
-            event.preventDefault();
-            var trainName = $("#trainName").val().trim();
-            var destination = $("#destinantion").val().trim();
-            var firstTrain = $("#firstTrainTime").val().trim();
-            var freqMin = $("#frequency").val().trim();
-
-            dataBase.ref().push({
-                trainName: trainName,
-                destination: destination,
-                firstTrain: firstTrain,
-                freqMin: freqMin,
-              
-            });
-    });
-
-
-
-   </script>
-  <script type="text/javascript"></script>   
 </body>
 
 </html>
