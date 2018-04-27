@@ -1,62 +1,62 @@
-$(document).ready(function(){
-
-
-
-    // Initialize Firebase
+ // Initialize Firebase
     var config = {
-      apiKey: "AIzaSyDRwNPM42G9fHAGYNdlxMxWgn6iF4S_Rjo",
-      authDomain: "trainschedule-8a99c.firebaseapp.com",
-      databaseURL: "https://trainschedule-8a99c.firebaseio.com",
-      projectId: "trainschedule-8a99c",
-      storageBucket: "trainschedule-8a99c.appspot.com",
-      messagingSenderId: "866381105671"
+    apiKey: "AIzaSyDRwNPM42G9fHAGYNdlxMxWgn6iF4S_Rjo",
+    authDomain: "trainschedule-8a99c.firebaseapp.com",
+    databaseURL: "https://trainschedule-8a99c.firebaseio.com",
+    projectId: "trainschedule-8a99c",
+    storageBucket: "trainschedule-8a99c.appspot.com",
+    messagingSenderId: "866381105671"
     };
-    firebase.initializeApp(config);
- 
-    var dataBase = firebase.database();
-        var trainName = "";
-        var destination = "";
-        var firstTrain = "";
-        var freqMin = "";
-
-      database.ref().put("value", function(snapshot) {
-                trainName = snapshot.val().trainName;
-                destination = snapshot.val().destination;
-                firstTrain = snapshot.val().firstTrain;
-                freqMin = snapshot.val().freqMin;
-                var now = moment().format(LT);
-                var nextArr =  moment().startOf('minute').fromNow();
-                var minAway= moment(nextArr - now);
-                console.log(snapshot.val());
-          console.log(snapshot.val().trainName);
-          console.log(snapshot.val().destination);
-          console.log(snapshot.val().firstTrain);
-          console.log(snapshot.val().freqMin);
-
-
-              $("#display").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + freqMin + "</td><td>" +  nextArr + "</td><td>" + minAway + "</td>");
-
-  },
-    function(errorObject) {
-        console.log("The read failed: " + errorObject.code);
-  });
+        firebase.initializeApp(config);
+                var dataBase = firebase.database();
+                var trainName = "";
+                var destination = "";
+                var firstTrain = "";
+                var freqMin = "";
+//Prepare the DOM for jquery
+    $(document).ready(function(){  
 //Submit information
-    $("#submit").on("click", function(event) {
-            console.log("clicked");
-//No page refresh            
-            event.preventDefault();
+    $("button").on("click", function(event) {
 //Put submit information in variables
-            var trainName = $("#trainName").val().trim();
-            var destination = $("#destinantion").val().trim();
-            var firstTrain = $("#firstTrainTime").val().trim();
-            var freqMin = $("#frequency").val().trim();
+        var trainName = $("#trainName").val().trim();
+        var destination = $("#destination").val().trim();
+        var firstTrain = $("#firstTrainTime").val().trim();
+        var freqMin = $("#frequency").val().trim();
 //Move input data to the table
             dataBase.ref().push({
                 trainName: trainName,
                 destination: destination,
                 firstTrain: firstTrain,
                 freqMin: freqMin,
-                
             });
+                $("form").trigger("reset");
     });
-})
+    });
+//Add data to the database and display it on the page    
+    dataBase.ref().on("child_added", function(snapshot) {
+            trainName = snapshot.val().trainName;
+            destination = snapshot.val().destination;
+            firstTrain = snapshot.val().firstTrain;
+            freqMin = snapshot.val().freqMin;
+            var trainFreq = freqMin;
+        // First Time (pushed back 1 year to make sure it comes before current time)
+            var firstTimeConverted = moment(firstTrain, "HH:mm").subtract(1, "years");
+            var now = moment();
+        // Difference between now and the first train time    
+            var diffTime = moment().diff(moment(firstTimeConverted), "minutes");
+        // Time apart (remainder)
+            var tRemainder = diffTime % trainFreq;
+        // Minutes Until Train
+            var tMinutesTillTrain = trainFreq - tRemainder;
+        // Next Train
+            var nextTrain = moment().add(tMinutesTillTrain, "HH:mm");
+                $("#display").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + trainFreq + "</td><td>" +  moment(nextTrain).format("HH:mm") + "</td><td>" + tMinutesTillTrain + "</td>");
+    },
+                    function(errorObject) {
+                        console.log("The read failed: " + errorObject.code);
+  });
+
+
+
+
+    
