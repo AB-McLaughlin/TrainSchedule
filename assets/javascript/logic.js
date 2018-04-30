@@ -30,6 +30,7 @@
                 freqMin: freqMin,
             });
                 $("form").trigger("reset");
+                $("#header").append( + moment())
     });
     });
 //Add data to the database and display it on the page    
@@ -48,14 +49,16 @@
             var tRemainder = diffTime % trainFreq;
         // Minutes Until Train
             var tMinutesTillTrain = trainFreq - tRemainder;
-        // Next Train
-            var nextTrain = moment().add(tMinutesTillTrain, "HH:mm");
-                $("#display").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + trainFreq + "</td><td>" +  moment(nextTrain).format("HH:mm") + "</td><td>" + tMinutesTillTrain + "</td>");
-    },
+         // Next Train
+            var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+            var catchTrain = moment(nextTrain).format("h:mm a");
+            
+               $("#display").append("<tr><td>" + trainName + "</td><td>" + destination + "</td><td>" + trainFreq + "</td><td>" +  catchTrain + "</td><td>" + tMinutesTillTrain + "</td>");
+    },          
                     function(errorObject) {
                         console.log("The read failed: " + errorObject.code);
   });
-
+ 
 
 
 
